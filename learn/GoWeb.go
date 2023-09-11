@@ -5,6 +5,11 @@ import "fmt"
 func Test() {
 	fmt.Println("hello is a 2 comit in file")
 	fmt.Println(43 + 232)
+
+	for i := 0; i < 10; i++ {
+
+		fmt.Println(i + 12)
+	}
 }
 
 /*
