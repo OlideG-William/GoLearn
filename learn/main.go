@@ -24,4 +24,9 @@ func main() {
 		fmt.Println(v)
 	}
 	Test()
+	fix()
+}
+
+func fix() {
+	fmt.Println("Hello i fix function")
 }
