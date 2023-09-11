@@ -24,4 +24,5 @@ func main() {
 		fmt.Println(v)
 	}
 	Test()
+	Name1()
 }
