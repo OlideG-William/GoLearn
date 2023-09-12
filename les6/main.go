@@ -23,8 +23,4 @@ func main() {
 
 		fmt.Println(v)
 	}
-
-	array := []int{11, 543, 3, 667, 32, 12, 532}
-	fmt.Println(BubbleSort(array))
-
 }
