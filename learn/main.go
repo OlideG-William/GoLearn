@@ -1,32 +1,43 @@
 package main
 
+// Канали пишуться в різних потоках, при читані запису в тому ж потоці буде deadlock
+
 import (
 	"fmt"
-	"time"
 )
 
 func main() {
 
-	maessage := make(chan string)
+	data := make(chan int)
+	exit := make(chan int)
 
 	go func() {
 
 		for i := 0; i < 10; i++ {
-			time.Sleep(time.Millisecond * 300)
-			maessage <- fmt.Sprintf("%d", i)
+			fmt.Println(<-data)
+
 		}
 
-		close(maessage)
+		exit <- 0
 	}()
 
-	for v := range maessage {
-
-		fmt.Println(v)
-	}
-	Test()
-	fix()
+	salect1(data, exit)
+	//time.Sleep(1 * time.Second)
 }
 
-func fix() {
-	fmt.Println("Hello i fix function")
+func salect1(data, exit chan int) {
+	x := 0
+	for {
+		select {
+		case data <- x:
+			x += 10
+		case <-exit:
+			fmt.Println("exit")
+			return
+
+			//default:
+			//fmt.Println("waiting")
+			//time.Sleep(100 * time.Millisecond)
+		}
+	}
 }
