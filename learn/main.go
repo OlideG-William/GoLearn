@@ -4,40 +4,36 @@ package main
 
 import (
 	"fmt"
+	"sync"
+	"time"
 )
+
+type Counter struct {
+	mu sync.Mutex
+	c  map[string]int
+}
+
+func (c *Counter) Inc(key string) {
+	c.mu.Lock()
+	c.c[key]++
+	c.mu.Unlock()
+}
+
+func (c *Counter) Value(key string) int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.c[key]
+}
 
 func main() {
 
-	data := make(chan int)
-	exit := make(chan int)
+	key := "test"
 
-	go func() {
-
-		for i := 0; i < 10; i++ {
-			fmt.Println(<-data)
-
-		}
-
-		exit <- 0
-	}()
-
-	salect1(data, exit)
-	//time.Sleep(1 * time.Second)
-}
-
-func salect1(data, exit chan int) {
-	x := 0
-	for {
-		select {
-		case data <- x:
-			x += 10
-		case <-exit:
-			fmt.Println("exit")
-			return
-
-			//default:
-			//fmt.Println("waiting")
-			//time.Sleep(100 * time.Millisecond)
-		}
+	c := Counter{c: make(map[string]int)}
+	for i := 0; i < 1000; i++ {
+		go c.Inc(key)
 	}
+
+	time.Sleep(time.Second * 3)
+	fmt.Println(c.Value(key))
 }
