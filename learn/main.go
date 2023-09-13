@@ -1,39 +1,51 @@
 package main
 
-// Канали пишуться в різних потоках, при читані запису в тому ж потоці буде deadlock
+// Канали пишуться в різних потоках, при читані запису в одному ж потоці буде deadlock!
 
 import (
 	"fmt"
-	"sync"
-	"time"
+	"html/template"
+	"net/http"
 )
 
-type Counter struct {
-	mu sync.Mutex
-	c  map[string]int
+type User struct {
+	Name                string
+	Age                 int
+	Money               int16
+	Av_grades, Happines float64
+	Hobbit              []string
 }
 
-func (c *Counter) Inc(key string) {
-	c.mu.Lock()
-	c.c[key]++
-	c.mu.Unlock()
+func (u User) getinfo() string {
+	return fmt.Sprintf("User name is %s, he is age: %d", u.Name, u.Age)
 }
 
-func (c *Counter) Value(key string) int {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	return c.c[key]
+func (u *User) setNameNew(newname string) {
+	u.Name = newname
+}
+
+func Home_meth(w http.ResponseWriter, r *http.Request) {
+
+	karl := User{Name: "Karl", Age: 43, Money: 21092, Av_grades: 4.2, Happines: 0.4,
+		Hobbit: []string{"dsds", "asdfasfads", "gglls"}}
+	tmpl, _ := template.ParseFiles("template/Home_meth.html")
+	tmpl.Execute(w, karl)
+}
+
+func handlreq() {
+
+	http.HandleFunc("/", Home_meth)
+	http.ListenAndServe(":4545", nil)
 }
 
 func main() {
+	//start := time.Now()
 
-	key := "test"
+	handlreq()
 
-	c := Counter{c: make(map[string]int)}
-	for i := 0; i < 1000; i++ {
-		go c.Inc(key)
-	}
+	//karl := User{name: "Karl", age: 43, money: 21092, av_grades: 4.2, happines: 0.4}
 
-	time.Sleep(time.Second * 3)
-	fmt.Println(c.Value(key))
+	//elapsed := time.Since(start)
+	//fmt.Println("time compile project", elapsed)
+
 }

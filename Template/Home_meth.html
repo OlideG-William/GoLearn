@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General PAGE</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>General PAGE</h1>
+        {{if gt .Age 20}}
+        <span> Hey Hello!</span>
+        {{else}}
+        <span>Who are you? </span>
+        {{end}}
+
+            <ul>
+                {{range .Hobbit}}
+
+                <li><b> {{ . }}</li></b>
+                {{else}}
+                <li><b> nothing write </b></li>
+                {{end}}
+            </ul>
+
+<p>User: {{ .Name}} </p>
+<p>Age: {{ .Age}} </p>
+<p>Money: {{ .Money}} </p>
+</body>
+</html>
