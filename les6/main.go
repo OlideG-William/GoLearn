@@ -7,20 +7,27 @@ import (
 
 func main() {
 
-	maessage := make(chan string)
+	start := time.Now()
 
+	timer1 := time.NewTimer(2 * time.Second)
+
+	<-timer1.C
+	fmt.Println("Timer 1 fired")
+
+	timer2 := time.NewTimer(time.Second)
 	go func() {
+		<-timer2.C
+		fmt.Println("Timer 2 fired")
 
-		for i := 0; i < 10; i++ {
-			time.Sleep(time.Millisecond * 300)
-			maessage <- fmt.Sprintf("%d", i)
-		}
-
-		close(maessage)
 	}()
-
-	for v := range maessage {
-
-		fmt.Println(v)
+	stop2 := timer2.Stop()
+	if stop2 {
+		fmt.Println("Timer 2 stopped")
 	}
+	time.Sleep(2 * time.Second)
+
+	fmt.Println()
+	elapsed := time.Since(start)
+	fmt.Println("time compile project", elapsed)
+
 }
