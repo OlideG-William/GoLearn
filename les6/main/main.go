@@ -2,53 +2,43 @@ package main
 
 import (
 	"fmt"
-	"sync/atomic"
+	"math/rand"
 	"time"
 )
 
-type WaitGroup struct {
-	counter int64
+type Player struct {
+	health int
 }
 
-func (w *WaitGroup) Add(n int64) {
-
-	atomic.AddInt64(&w.counter, n)
-}
-
-func (w *WaitGroup) Done() {
-
-	w.Add(-1)
-	if atomic.LoadInt64(&w.counter) < 0 {
-		panic("negative wait group counter")
+func NewPlayer() *Player {
+	return &Player{
+		health: 100,
 	}
 }
 
-func (w *WaitGroup) Wait() {
-
+func startUIloop(p *Player) {
+	ticker := time.NewTicker(time.Second)
 	for {
+		fmt.Printf("player health: %d\r", p.health)
+		<-ticker.C
+	}
+}
 
-		if atomic.LoadInt64(&w.counter) == 0 {
-			return
+func startGameLoop(p *Player) {
+	tiker := time.NewTicker(time.Millisecond * 300)
+	for {
+		p.health -= rand.Intn(40)
+		if p.health <= 0 {
+			fmt.Println("GAME OVER")
+			break
 		}
+		<-tiker.C
 	}
 }
 
 func main() {
 
-	var wg WaitGroup
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
-		time.Sleep(300 * time.Millisecond)
-		fmt.Println("go routine 1")
-
-	}()
-	go func() {
-		defer wg.Done()
-		time.Sleep(500 * time.Millisecond)
-		fmt.Println("go routine 2")
-	}()
-
-	wg.Wait()
-	fmt.Println("all go routines done!")
+	player := NewPlayer()
+	go startUIloop(player)
+	startGameLoop(player)
 }
