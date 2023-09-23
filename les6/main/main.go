@@ -2,43 +2,36 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
+	"sync"
 )
 
-type Player struct {
-	health int
+type Contaiter struct {
+	mu       sync.Mutex
+	counters map[string]int
 }
 
-func NewPlayer() *Player {
-	return &Player{
-		health: 100,
-	}
-}
-
-func startUIloop(p *Player) {
-	ticker := time.NewTicker(time.Second)
-	for {
-		fmt.Printf("player health: %d\r", p.health)
-		<-ticker.C
-	}
-}
-
-func startGameLoop(p *Player) {
-	tiker := time.NewTicker(time.Millisecond * 300)
-	for {
-		p.health -= rand.Intn(40)
-		if p.health <= 0 {
-			fmt.Println("GAME OVER")
-			break
-		}
-		<-tiker.C
-	}
+func (c *Contaiter) inc(name string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.counters[name]++
 }
 
 func main() {
 
-	player := NewPlayer()
-	go startUIloop(player)
-	startGameLoop(player)
+	c := Contaiter{
+		counters: map[string]int{"a": 2, "b": 0},
+	}
+	var wg sync.WaitGroup
+	doIncrement := func(name string, n int) {
+		for i := 0; i < n; i++ {
+			c.inc(name)
+		}
+		wg.Done()
+	}
+	wg.Add(3)
+	go doIncrement("a", 10000)
+	go doIncrement("a", 10000)
+	go doIncrement("b", 10000)
+	wg.Wait()
+	fmt.Println(c.counters)
 }
