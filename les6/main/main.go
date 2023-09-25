@@ -1,119 +1,56 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"sync"
-	"time"
+	"log"
 )
 
-func writeWithoutConcurrent() {
-	start := time.Now()
-	var counter int
-
-	for i := 0; i < 1000; i++ {
-		time.Sleep(time.Millisecond)
-		counter++
-	}
-	fmt.Println(counter)
-	fmt.Println("Without Mutex", time.Since(start))
+type AppErrors struct {
+	Message string
+	Err     error
 }
 
-func writeWithoutMutex() {
-	start := time.Now()
-	var counter int
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-
-	wg.Add(1000)
-	for i := 0; i < 1000; i++ {
-		go func() {
-			defer wg.Done()
-			time.Sleep(time.Millisecond)
-
-			mu.Lock()
-			counter++
-			mu.Unlock()
-		}()
-	}
-	wg.Wait()
-	fmt.Println(counter)
-	fmt.Println("With Mutex: ", time.Since(start))
-}
-
-func readWriteMutex() {
-	start := time.Now()
-	var (
-		counter int
-		wg      sync.WaitGroup
-		mu      sync.Mutex
-		muR     sync.RWMutex
-	)
-
-	wg.Add(100)
-	for i := 0; i < 50; i++ {
-		go func() {
-			defer wg.Done()
-
-			muR.RLock()
-			time.Sleep(time.Nanosecond)
-			_ = counter
-			muR.RUnlock()
-
-		}()
-
-		go func() {
-			defer wg.Done()
-
-			mu.Lock()
-			time.Sleep(time.Nanosecond)
-			counter++
-			mu.Unlock()
-		}()
-	}
-	wg.Wait()
-	fmt.Println(counter)
-	fmt.Println("Mutex read/write time: ", time.Since(start))
-
-}
-
-// Mutex code ----vvvv----vvvvv
-
-type Container struct {
-	mu       sync.Mutex
-	counters map[string]int
-}
-
-func (c *Container) inc(name string) {
-
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.counters[name]++
+func (a *AppErrors) Error() string {
+	return a.Message
 }
 
 func main() {
-	c := Container{
+	divide(4, 0)
+	fmt.Println("after panic")
+}
 
-		counters: map[string]int{"a": 0, "b": 0},
-	}
-
-	var wg sync.WaitGroup
-
-	doIncrement := func(name string, n int) {
-		for i := 0; i < n; i++ {
-			c.inc(name)
+func divide(a, b int) {
+	fmt.Println()
+	defer func() {
+		var appErr *AppErrors
+		if err := recover(); err != nil {
+			switch err.(type) {
+			case error:
+				if errors.As(err.(error), &appErr) {
+					fmt.Println("App err panic! ", err)
+				} else {
+					fmt.Println("this is other panic", err)
+				}
+			default:
+				fmt.Println("this is default go panic!", err)
+			}
+			log.Println("Panic happend: ", err)
 		}
-		wg.Done()
+	}()
+
+	fmt.Println(div(a, b))
+	//fmt.Println("time compile: ", time.Since(start))
+}
+
+func div(a, b int) int {
+
+	if b == 0 {
+		panic(fmt.Errorf("some err"))
+		/*panic(&AppErrors{
+			Message: "this divide by zero custom error",
+			Err:     nil,
+		})*/
 	}
-
-	wg.Add(3)
-	go doIncrement("a", 10000)
-	go doIncrement("a", 10000)
-	go doIncrement("b", 10000)
-
-	wg.Wait()
-	fmt.Println(c.counters)
-
-	//writeWithoutConcurrent()
-	//writeWithoutMutex()
-	//readWriteMutex()
+	return a / b
 }
