@@ -1,43 +1,45 @@
 package main
 
 import (
-	"html/template"
-	"net/http"
+	"database/sql"
+	"fmt"
+
+	_ "github.com/lib/pq"
 )
 
-type prodSpec struct {
-	Size   string
-	Weight float32
-	Desrc  string
+type products struct {
+	id      int
+	model   string
+	company string
+	price   int
 }
-
-type product struct {
-	ProdId int
-	Name   string
-	Cost   float64
-	Specs  prodSpec
-}
-
-var tpl *template.Template
-var prod1 product
 
 func main() {
-	prod1 = product{
-		ProdId: 15,
-		Name:   "WIth iphone 15",
-		Cost:   88.232,
-		Specs: prodSpec{
-			Size:   "132 x 22 x 998 mm",
-			Weight: 322,
-			Desrc:  "Over here design",
-		},
+	connStr := "user=postgres password=123456789io dbname=productdb sslmode=disable"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("select * from productname")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	product := []products{}
+
+	for rows.Next() {
+		p := products{}
+		err := rows.Scan(&p.id, &p.model, &p.company, &p.price)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		product = append(product, p)
 	}
 
-	tpl, _ = tpl.ParseGlob("dataweb/*.html")
-	http.HandleFunc("/productinfo", producnInfoHandle)
-	http.ListenAndServe(":8080", nil)
-}
-
-func producnInfoHandle(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "prodinfo.html", prod1)
+	for _, p := range product {
+		fmt.Println(p.id, p.model, p.company, p.price)
+	}
 }
