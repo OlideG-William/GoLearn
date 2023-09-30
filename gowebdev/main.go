@@ -1,23 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 )
 
-var tpl *template.Template
-var name = "Joch"
+type Todo struct {
+	Title string
+	Done  bool
+}
 
-func WelcomeHandle(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("indexHandler running")
-
-	tpl.ExecuteTemplate(w, "welcome.html", name)
+type TodoPageData struct {
+	PageTitle string
+	Todos     []Todo
 }
 
 func main() {
-
-	tpl, _ = tpl.ParseGlob("gowebdev/*.html")
-	http.HandleFunc("/welcome", WelcomeHandle)
-	http.ListenAndServe(":8080", nil)
+	tmp := template.Must(template.ParseFiles("gowebdev/welcome.html"))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		data := TodoPageData{
+			PageTitle: "My TODO list",
+			Todos: []Todo{
+				{Title: "Task1", Done: false},
+				{Title: "Task2", Done: true},
+				{Title: "Task3", Done: true},
+			},
+		}
+		tmp.Execute(w, data)
+	})
+	http.ListenAndServe(":80", nil)
 }
