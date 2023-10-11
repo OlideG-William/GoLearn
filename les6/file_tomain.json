@@ -1,0 +1,15 @@
+{
+    "name":"Andrew",
+    "age":43,
+    "is_blocked":true,
+    "books":[
+        {
+            "name":"Ben",
+            "year":1996
+        },
+        {
+            "name":"Alen",
+            "year":2009
+        }
+    ]
+}

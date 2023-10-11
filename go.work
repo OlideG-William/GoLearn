@@ -2,6 +2,6 @@ go 1.21.1
 
 use (
 	./learn
-	./les6/main
+	./les6
 	./website
 )

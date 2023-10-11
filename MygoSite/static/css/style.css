@@ -1,0 +1,51 @@
+body {
+    margin: 0;
+    background-color: #143754;
+  }
+
+  button:active {
+    outline: none;
+  }
+
+  input:active {
+    outline: none;
+  }
+
+  button:focus {
+    outline: none;
+  }
+
+  input:focus {
+    outline: none;
+  }
+
+  .container {
+    position: absolute;
+    max-width: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes slowChatAnim {
+    from {
+      transform: translateY(-4px);
+    }
+    to {
+      transform: translateY(0px);
+    }
+  }
+
+  .first-dot {
+    animation: slowChatAnim 0.7s ease infinite alternate;
+  }
+
+  .second-dot {
+    animation: slowChatAnim 0.7s ease infinite alternate;
+    animation-delay: 0.2s;
+  }
+
+ .third-dot {
+   animation: slowChatAnim 0.7s ease infinite alternate;
+   animation-delay: 0.35s;
+ }
