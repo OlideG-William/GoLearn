@@ -1,26 +1,34 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
-	"github.com/tidwall/sjson"
+	//"github.com/tidwall/sjson"
 )
+
+
+type Messages struct{
+	Name string
+	Body string
+	Time int64
+}
+
+
+
+
 
 func main() {
 
-	json := `{
-				"age":37,
-				"children": ["Sara","Alex","Jack"],
-				"friends": [
-				  {"age": 44, "first": "Dale", "last": "Murphy"},
-				  {"age": 68, "first": "Roger", "last": "Craig"},
-				  {"age": 47, "first": "Jane", "last": "Murphy"}
-				],
-				"name":{"first":"Tom","last":"Anderson"},
-				"age": 1631 
-		  }`
 
-	Val, _ := sjson.Set(json, "name.first", "Filson")
-	fmt.Println(Val)
+	m:= Messages{"Alice", "Hello", 33223423323432}
+	b, err := json.Marshal(m)
+	if err!= nil {
+		panic("error")
+	}
+	fmt.Println(string(b))
 
+	/*var m Messages
+	err:= json.Unmarshal(b, &m)*/
+	
 }
