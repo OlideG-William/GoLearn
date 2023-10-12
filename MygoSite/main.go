@@ -13,10 +13,13 @@ func homepageHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Home")
 	templ.ExecuteTemplate(w, "main", &Page{Title: "Welcome to TL;DR"})
 }
+
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("About")
 	templ.ExecuteTemplate(w, "about", &Page{Title: "About TL;DR"})
 }
+
+
 func main() {
 	http.HandleFunc("/", homepageHandler)
 	http.HandleFunc("/about", aboutHandler)
