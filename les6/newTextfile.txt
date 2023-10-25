@@ -1,0 +1,5 @@
+For more granular writes, open a file for writing.\n
+		It’s idiomatic to defer a Close immediately after opening a file.\n
+		defer f.Close()\n
+		You can Write byte slices as you’d expect.
+hello i remember to add paswd:2222 and email:filson@gmail.com
