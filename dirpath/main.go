@@ -2,20 +2,35 @@ package main
 
 // flags Args
 import (
-	"fmt"
+	"log"
 	"os"
-	"strings"
 )
+
+var (
+	WarningLogger *log.Logger
+	InfoLogger    *log.Logger
+	ErrorLoger    *log.Logger
+)
+
+func init() {
+	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY|
+		os.O_TRUNC, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	InfoLogger = log.New(file, "INFO: ", log.LstdFlags|log.Lshortfile)
+	WarningLogger = log.New(file, "Warning: ", log.LstdFlags|log.Lshortfile)
+	ErrorLoger = log.New(file, "ERROR: ", log.LstdFlags|log.Lshortfile)
+
+}
 
 func main() {
 
-	os.Setenv("FOO", "1")
-	fmt.Println("FOO:", os.Getenv("FOO"))
-	fmt.Println("BAR:", os.Getenv("BAR"))
-
-	fmt.Println()
-	for _, e := range os.Environ() {
-		pair := strings.SplitN(e, "=", 2)
-		fmt.Println(pair[0])
-	}
+	flog := log.New(os.Stdout, "my:", log.LstdFlags)
+	flog.SetPrefix("MY TURN: ")
+	flog.Println("from flog")
+	InfoLogger.Println("ThiS is some info")
+	WarningLogger.Println("This is probably important")
+	ErrorLoger.Println("Something went wrong")
 }
