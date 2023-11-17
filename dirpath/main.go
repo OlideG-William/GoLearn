@@ -2,8 +2,10 @@ package main
 
 // flags Args
 import (
+	"fmt"
 	"log"
 	"os"
+	"time"
 )
 
 var (
@@ -26,6 +28,7 @@ func init() {
 }
 
 func main() {
+	start := time.Now()
 
 	flog := log.New(os.Stdout, "my:", log.LstdFlags)
 	flog.SetPrefix("MY TURN: ")
@@ -33,4 +36,5 @@ func main() {
 	InfoLogger.Println("ThiS is some info")
 	WarningLogger.Println("This is probably important")
 	ErrorLoger.Println("Something went wrong")
+	fmt.Println("Compile program:", time.Since(start))
 }
