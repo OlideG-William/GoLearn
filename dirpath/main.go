@@ -1,40 +1,33 @@
 package main
 
-// flags Args
 import (
 	"fmt"
-	"log"
-	"os"
+	"net/http"
 	"time"
+
+	"github.com/OlideG-William/GoLearn/password"
 )
 
-var (
-	WarningLogger *log.Logger
-	InfoLogger    *log.Logger
-	ErrorLoger    *log.Logger
-)
+// flags Args
 
-func init() {
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY|
-		os.O_TRUNC, 0666)
-	if err != nil {
-		log.Fatal(err)
+func hello(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	fmt.Println("server: hello handler started")
+	defer fmt.Println("server: hello handler ended")
+
+	select {
+	case <-time.After(10 * time.Second):
+		fmt.Fprintf(w, "hello\n")
+	case <-ctx.Done():
+
+		err := ctx.Err()
+		fmt.Println("server:", err)
+		internalError := http.StatusInternalServerError
+		http.Error(w, err.Error(), internalError)
 	}
-
-	InfoLogger = log.New(file, "INFO: ", log.LstdFlags|log.Lshortfile)
-	WarningLogger = log.New(file, "Warning: ", log.LstdFlags|log.Lshortfile)
-	ErrorLoger = log.New(file, "ERROR: ", log.LstdFlags|log.Lshortfile)
-
 }
 
 func main() {
-	start := time.Now()
-
-	flog := log.New(os.Stdout, "my:", log.LstdFlags)
-	flog.SetPrefix("MY TURN: ")
-	flog.Println("from flog")
-	InfoLogger.Println("ThiS is some info")
-	WarningLogger.Println("This is probably important")
-	ErrorLoger.Println("Something went wrong")
-	fmt.Println("Compile program:", time.Since(start))
+	str := password.Generate(8, 23)
+	fmt.Println("your pass: ", str)
 }
