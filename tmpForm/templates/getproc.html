@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <style>
+    
+    #dataID {
+      background-color:chartreuse;
+    }
+    
+  </style>
+<body>
+
+<h2> HTML Form Using Get Method </h2>
+
+<form action="/processget" method="GET">
+    <label for="usernameID"> Username:</label><br>
+    <input type="text" id="usernameID" name="usernameName" value="Jane"><br>
+    Sensitive data:<br>
+    <input type="text" id="dataID" name="dataName" value="super ses data"><br><br>
+    <input type="submit" value="Sumbit">
+</form>
+
+<br><br><br><br>
+<button type="button"
+ onclick="document.getElementById('demo').innerHTML = document.getElementById('dataID').value">
+ Click to show Sensitive Data field</button>
+<p id="demo">empty</p>
+</body>
+</html>
